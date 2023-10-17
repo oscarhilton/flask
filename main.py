@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from minio import Minio
 from gensim.models import KeyedVectors
 import io
+import tempfile
 
 # Initialize a Minio client object.
 minio_client = Minio(
@@ -13,6 +14,15 @@ minio_client = Minio(
 
 app = Flask(__name__)
 
+try:
+    file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(file_data.read())
+    word_vectors = KeyedVectors.load_word2vec_format(temp_file.name, binary=True)
+except Exception as e:
+    print(f"Error: {e}")
+
+
 @app.route('/')
 def index():
     return "Hello World!"
@@ -20,8 +30,6 @@ def index():
 @app.route('/api/antonym/<word>')
 def get_antonym(word):
     try:
-        file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
-        word_vectors = KeyedVectors.load_word2vec_format(io.BytesIO(file_data.read()), binary=True)
         # Finding most similar vectors to the negative vector of the given word
         antonyms = word_vectors.most_similar(negative=[word])
         antonym_words = [item[0] for item in antonyms]
