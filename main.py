@@ -5,8 +5,8 @@ import os
 # Initialize a Minio client object.
 minio_client = Minio(
     endpoint="bucket:9000",
-    access_key="z0JkVnGjKZUBEzMFfVpd",
-    secret_key="jIVNFUyP6WfOoaOiNHz54Ip9Q9ljMFc27CUwTD5q",
+    access_key="DgczDqMfqMqwS80IkOiR",
+    secret_key="l9XXV7g7UoN091UAzzYQBW8fMl5nhSzgsqwbKBM5",
     secure=False
 )
 
