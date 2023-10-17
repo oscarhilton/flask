@@ -4,6 +4,7 @@ from gensim.models import KeyedVectors
 import io
 import tempfile
 import gzip
+from sklearn.preprocessing import MinMaxScaler
 
 # Initialize a Minio client object.
 minio_client = Minio(
@@ -30,6 +31,8 @@ def get_antonym(word):
     try:
         # Finding most similar vectors to the negative vector of the given word
         vector = word_vectors[word]
-        return jsonify({word: vector.tolist() }), 200
+        scaler = MinMaxScaler(feature_range=(0, 100))
+        normalized_data = scaler.fit_transform([vector])[0]
+        return jsonify({word: normalized_data.tolist() }), 200
     except Exception as e:
         return str(e), 500
