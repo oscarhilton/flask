@@ -30,6 +30,6 @@ def get_antonym(word):
     try:
         # Finding most similar vectors to the negative vector of the given word
         vector = word_vectors[word]
-        return jsonify({word: vector}), 200
+        return jsonify({word: vector.tolist() }), 200
     except Exception as e:
         return str(e), 500
