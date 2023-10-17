@@ -25,12 +25,11 @@ word_vectors = KeyedVectors.load_word2vec_format(temp_file.name, binary=True)
 def index():
     return jsonify({ "status": "OK" }), 200
 
-@app.route('/api/antonym/<word>/<word2>')
-def get_antonym(word, word2):
+@app.route('/api/vector/<word>')
+def get_antonym(word):
     try:
         # Finding most similar vectors to the negative vector of the given word
-        antonyms = word_vectors.most_similar(positive=[word2], negative=[word], topn=10)
-        antonym_words = [item[0] for item in antonyms]
-        return jsonify({"antonyms": antonym_words}), 200
+        vector = word_vectors[word]
+        return jsonify({word: vector}), 200
     except Exception as e:
         return str(e), 500
