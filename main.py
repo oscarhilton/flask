@@ -4,7 +4,7 @@ import os
 
 # Initialize a Minio client object.
 minio_client = Minio(
-    endpoint="bucket.railway.internal",
+    endpoint="bucket:9000",
     access_key="z0JkVnGjKZUBEzMFfVpd",
     secret_key="jIVNFUyP6WfOoaOiNHz54Ip9Q9ljMFc27CUwTD5q",
     secure=False
