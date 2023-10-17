@@ -29,7 +29,7 @@ def index():
 def get_antonym(word):
     try:
         # Finding most similar vectors to the negative vector of the given word
-        antonyms = word_vectors.most_similar(negative=[word])
+        antonyms = word_vectors.most_similar(positive=[word], topn=10)
         antonym_words = [item[0] for item in antonyms]
         return jsonify({"antonyms": antonym_words}), 200
     except Exception as e:
