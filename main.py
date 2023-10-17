@@ -15,18 +15,15 @@ minio_client = Minio(
 
 app = Flask(__name__)
 
-try:
-    file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
-    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-        with gzip.GzipFile(fileobj=file_data) as gz:
-            temp_file.write(gz.read())
-    word_vectors = KeyedVectors.load_word2vec_format(temp_file.name, binary=True)
-except Exception as e:
-    print(f"Error: {e}")
+file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
+with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+    with gzip.GzipFile(fileobj=file_data) as gz:
+        temp_file.write(gz.read())
+word_vectors = KeyedVectors.load_word2vec_format(temp_file.name, binary=True)
 
 @app.route('/')
 def index():
-    return "Hello World!"
+    return jsonify({ "status": "OK" }), 200
 
 @app.route('/api/antonym/<word>')
 def get_antonym(word):
