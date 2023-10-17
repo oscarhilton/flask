@@ -1,6 +1,7 @@
-from flask import Flask, send_file
+from flask import Flask, jsonify
 from minio import Minio
-import os
+from gensim.models import KeyedVectors
+import io
 
 # Initialize a Minio client object.
 minio_client = Minio(
@@ -12,15 +13,15 @@ minio_client = Minio(
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    try:
-        # Fetch a specific file from MY_BUCKET
-        file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
-        byte_stream = io.BytesIO(file_data.read())
-        return send_file(byte_stream, attachment_filename='GoogleNews-vectors-negative300-SLIM.bin.gz', as_attachment=True)
-    except Exception as e:
-        return str(e), 500  # Return the exception message as a string, with a 500 Internal Server Error status code
+file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
+word_vectors = KeyedVectors.load_word2vec_format(io.BytesIO(file_data.read()), binary=True)
 
-if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+@app.route('/api/antonym/<word>')
+def get_antonym(word):
+    try:
+        # Finding most similar vectors to the negative vector of the given word
+        antonyms = word_vectors.most_similar(negative=[word])
+        antonym_words = [item[0] for item in antonyms]
+        return jsonify({"antonyms": antonym_words}), 200
+    except Exception as e:
+        return str(e), 500
