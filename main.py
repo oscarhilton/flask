@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, send_file
 from minio import Minio
 import os
 
@@ -15,11 +15,10 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     try:
-        # Fetch the list of buckets
-        buckets = minio_client.list_buckets()
-        # Convert the list of buckets to a list of bucket names
-        bucket_names = [bucket.name for bucket in buckets]
-        return jsonify({"buckets": bucket_names})
+        # Fetch a specific file from MY_BUCKET
+        file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
+        byte_stream = io.BytesIO(file_data.read())
+        return send_file(byte_stream, attachment_filename='GoogleNews-vectors-negative300-SLIM.bin.gz', as_attachment=True)
     except Exception as e:
         return str(e), 500  # Return the exception message as a string, with a 500 Internal Server Error status code
 
