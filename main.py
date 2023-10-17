@@ -36,7 +36,7 @@ def get_antonym(word):
         return str(e), 500
 
 
-@app.route('/api/sentiment/<text>', methods=['POST'])
+@app.route('/api/sentiment/<text>')
 def get_sentiment(text):
     blob = TextBlob(text)
     sentiment = blob.sentiment.polarity
