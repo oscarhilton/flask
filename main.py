@@ -16,6 +16,10 @@ app = Flask(__name__)
 file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
 word_vectors = KeyedVectors.load_word2vec_format(io.BytesIO(file_data.read()), binary=True)
 
+@app.route('/')
+def index():
+    return "Hello World!"
+
 @app.route('/api/antonym/<word>')
 def get_antonym(word):
     try:
