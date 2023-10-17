@@ -27,7 +27,7 @@ def index():
     return jsonify({ "status": "OK" }), 200
 
 @app.route('/api/similar/<word>')
-def get_antonym(word):
+def get_similar(word):
     try:
         antonyms = word_vectors.most_similar(positive=[word])
         antonym_words = [item[0] for item in antonyms]
@@ -43,7 +43,7 @@ def get_sentiment(text):
     return jsonify({"sentiment": sentiment, "text": text }), 200
 
 @app.route('/api/vector/<word>')
-def get_antonym(word):
+def get_vector(word):
     try:
         # Finding most similar vectors to the negative vector of the given word
         vector = word_vectors[word]
