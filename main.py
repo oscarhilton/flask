@@ -5,6 +5,7 @@ import io
 import tempfile
 import gzip
 from textblob import TextBlob
+from flask_cors import CORS
 
 # Initialize a Minio client object.
 minio_client = Minio(
@@ -15,6 +16,7 @@ minio_client = Minio(
 )
 
 app = Flask(__name__)
+CORS(app)
 
 file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
 with tempfile.NamedTemporaryFile(delete=False) as temp_file:
