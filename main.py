@@ -16,7 +16,7 @@ minio_client = Minio(
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://work2vec.objobj.xyz"}})
 
 file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
 with tempfile.NamedTemporaryFile(delete=False) as temp_file:
