@@ -18,11 +18,13 @@ minio_client = Minio(
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://similar.objobj.xyz"}})
 
-file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
-with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-    with gzip.GzipFile(fileobj=file_data) as gz:
-        temp_file.write(gz.read())
-word_vectors = KeyedVectors.load_word2vec_format(temp_file.name, binary=True)
+def get_vectors():
+    file_data = minio_client.get_object("google-news-vectors", "GoogleNews-vectors-negative300-SLIM.bin.gz")
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        with gzip.GzipFile(fileobj=file_data) as gz:
+            temp_file.write(gz.read())
+    word_vectors = KeyedVectors.load_word2vec_format(temp_file.name, binary=True)
+    return word_vectors
 
 @app.route('/')
 def index():
@@ -31,6 +33,7 @@ def index():
 @app.route('/api/similar/<word>')
 def get_similar(word):
     try:
+        word_vectors = get_vectors()
         antonyms = word_vectors.most_similar(positive=[word])
         antonym_words = [item[0] for item in antonyms]
         return jsonify({"similar": antonym_words, "word": word }), 200
@@ -48,6 +51,7 @@ def get_sentiment(text):
 def get_vector(word):
     try:
         # Finding most similar vectors to the negative vector of the given word
+        word_vectors = get_vectors()
         vector = word_vectors[word]
         return jsonify({"vector": vector.tolist(), "word": word }), 200
     except Exception as e:
